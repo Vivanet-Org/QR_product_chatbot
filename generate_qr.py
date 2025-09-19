@@ -72,7 +72,7 @@ if __name__ == "__main__":
         os.makedirs(qr_dir)
 
     # For development, use localhost
-    dev_base_url = "http://localhost:3000"
+    dev_base_url = "https://p2vzpcsr-3000.inc1.devtunnels.ms"
 
     print(f"Generating QR codes for products: {sample_product_ids}")
     print(f"Base URL: {dev_base_url}")
