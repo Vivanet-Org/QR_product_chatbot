@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { sendChatMessage } from '../services/api';
+import VoiceInput from './VoiceInput';
 
 const ChatInterface = ({ product }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [voiceError, setVoiceError] = useState('');
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -25,8 +27,18 @@ const ChatInterface = ({ product }) => {
     }
   }, [product]);
 
+  const handleVoiceTranscript = (transcript) => {
+    setInputMessage(transcript);
+    setVoiceError('');
+  };
+
+  const handleVoiceError = (error) => {
+    setVoiceError(error);
+    setTimeout(() => setVoiceError(''), 5000);
+  };
+
   const handleSendMessage = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     if (!inputMessage.trim() || isLoading) return;
 
@@ -102,6 +114,10 @@ const ChatInterface = ({ product }) => {
           disabled={isLoading}
           className="message-input"
         />
+        <VoiceInput
+          onTranscript={handleVoiceTranscript}
+          onError={handleVoiceError}
+        />
         <button
           type="submit"
           disabled={isLoading || !inputMessage.trim()}
@@ -110,6 +126,9 @@ const ChatInterface = ({ product }) => {
           Send
         </button>
       </form>
+      {voiceError && (
+        <div className="voice-error-message">{voiceError}</div>
+      )}
     </div>
   );
 };
