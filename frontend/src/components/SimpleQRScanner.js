@@ -201,24 +201,6 @@ const SimpleQRScanner = ({ onScan, onError }) => {
                   Last detected: {lastScanned.substring(0, 30)}...
                 </p>
               )}
-              <button
-                onClick={() => {
-                  console.log('Manual test: Simulating QR detection');
-                  handleQRDetection({ data: 'https://p2vzpcsr-3000.inc1.devtunnels.ms/?product_id=1' });
-                }}
-                style={{
-                  marginTop: '10px',
-                  padding: '5px 10px',
-                  fontSize: '12px',
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Test QR Detection (Product 1)
-              </button>
             </div>
           </div>
         )}
