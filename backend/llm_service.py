@@ -95,25 +95,22 @@ class LLMService:
                             response_language: Optional[str] = None) -> Tuple[str, str]:
         """
         Create a context-rich prompt combining product info and user question
-        with language awareness
+        with direct language processing (no translation of user question)
         Returns: (prompt, detected_language)
         """
         # Detect language of user question
         detected_lang = self.detect_language(user_question) if not response_language else response_language
 
-        # Translate question to English for better LLM understanding
-        translated_question = user_question
-        if detected_lang != 'en':
-            translated_question = self.translate_text(user_question, detected_lang, 'en')
-            print(f"Translated question to English: {translated_question}")
-
         # Get full language name for the prompt
         lang_name = self.language_map.get(detected_lang, detected_lang)
+
+        print(f"Detected language: {detected_lang} ({lang_name})")
+        print(f"Sending original question directly to LLM: {user_question}")
 
         prompt_template = """
 You are a helpful product support assistant. Answer the customer's question based on the product information provided below.
 
-IMPORTANT: The customer asked their question in {language}. You MUST provide your ENTIRE response in {language}. Do not mix languages.
+IMPORTANT: The customer asked their question in {language}. You MUST provide your ENTIRE response in {language}. Do not mix languages or translate the question - understand and respond to it directly.
 
 PRODUCT INFORMATION:
 - Product Name: {product_name}
@@ -128,8 +125,7 @@ PRODUCT INFORMATION:
 FREQUENTLY ASKED QUESTIONS:
 {faqs}
 
-CUSTOMER QUESTION (translated to English): {translated_question}
-ORIGINAL QUESTION (in {language}): {original_question}
+CUSTOMER QUESTION (in {language}): {user_question}
 
 Please provide a helpful, accurate answer in {language}. If the information isn't available in the product details, politely explain in {language} that you don't have that specific information and suggest contacting customer support.
 
@@ -153,8 +149,7 @@ Remember: Your ENTIRE response must be in {language}. Keep your response convers
             specs=product_data.get('detailed_specs', 'N/A'),
             warranty=product_data.get('warranty_info', 'N/A'),
             faqs=faqs_text or "No FAQs available",
-            translated_question=translated_question,
-            original_question=user_question
+            user_question=user_question
         )
 
         return prompt, detected_lang
@@ -204,23 +199,53 @@ Remember: Your ENTIRE response must be in {language}. Keep your response convers
     def _get_mock_response(self, prompt: str) -> str:
         """
         Generate a mock response for demo purposes when no API key is available
+        Enhanced to respond in the detected language
         """
         # Extract user question from prompt for better mock responses
         if "CUSTOMER QUESTION" in prompt:
-            # Check if language is mentioned in prompt
+            # Check if language is mentioned in prompt and respond accordingly
             if "spanish" in prompt.lower():
-                return "Gracias por su pregunta. Estaré encantado de ayudarle con información sobre este producto."
+                if "batería" in prompt.lower() or "battery" in prompt.lower():
+                    return "Según las especificaciones del producto, la duración de la batería es de hasta 10 horas para uso típico. Para juegos o tareas intensivas, puede esperar de 4 a 6 horas de duración de la batería."
+                elif "precio" in prompt.lower() or "cost" in prompt.lower():
+                    return "El precio actual de este producto es $1,299.99. Por favor, consulte nuestro sitio web para conocer las promociones o descuentos actuales que puedan estar disponibles."
+                else:
+                    return "Gracias por su pregunta. Según la información del producto, este UltraBook Pro 15 es una laptop de alto rendimiento para profesionales con especificaciones avanzadas."
+
             elif "french" in prompt.lower():
-                return "Merci pour votre question. Je serais heureux de vous aider avec des informations sur ce produit."
+                if "batterie" in prompt.lower() or "battery" in prompt.lower():
+                    return "Selon les spécifications du produit, l'autonomie de la batterie est jusqu'à 10 heures pour une utilisation normale. Pour les jeux ou les tâches intensives, vous pouvez vous attendre à 4-6 heures d'autonomie."
+                elif "prix" in prompt.lower() or "cost" in prompt.lower():
+                    return "Le prix actuel de ce produit est de 1 299,99 $. Veuillez consulter notre site web pour connaître les promotions ou remises actuellement disponibles."
+                else:
+                    return "Merci pour votre question. Selon les informations sur le produit, cet UltraBook Pro 15 est un ordinateur portable haute performance pour les professionnels."
+
             elif "german" in prompt.lower():
-                return "Vielen Dank für Ihre Frage. Ich helfe Ihnen gerne mit Informationen zu diesem Produkt."
+                if "batterie" in prompt.lower() or "akku" in prompt.lower():
+                    return "Laut den Produktspezifikationen beträgt die Akkulaufzeit bis zu 10 Stunden bei typischer Nutzung. Für Gaming oder intensive Aufgaben können Sie 4-6 Stunden Akkulaufzeit erwarten."
+                elif "preis" in prompt.lower() or "cost" in prompt.lower():
+                    return "Der aktuelle Preis für dieses Produkt beträgt 1.299,99 $. Bitte besuchen Sie unsere Website für aktuelle Werbeaktionen oder Rabatte."
+                else:
+                    return "Vielen Dank für Ihre Frage. Laut den Produktinformationen ist dieses UltraBook Pro 15 ein Hochleistungs-Laptop für Profis."
+
             elif "chinese" in prompt.lower():
-                return "感谢您的提问！我很乐意为您提供有关此产品的信息。"
+                if "电池" in prompt or "battery" in prompt.lower():
+                    return "根据产品规格，电池续航时间为典型使用情况下最长10小时。对于游戏或密集任务，您可以期望4-6小时的电池续航时间。"
+                elif "价格" in prompt or "cost" in prompt.lower():
+                    return "此产品的当前价格为$1,299.99。请查看我们的网站了解可能提供的当前促销或折扣。"
+                else:
+                    return "感谢您的提问！根据产品信息，这款UltraBook Pro 15是一款专为专业人士设计的高性能笔记本电脑。"
+
             elif "hindi" in prompt.lower():
-                return "आपके प्रश्न के लिए धन्यवाद। मैं इस उत्पाद के बारे में जानकारी देने में आपकी मदद करने के लिए खुश हूं।"
+                if "बैटरी" in prompt or "battery" in prompt.lower():
+                    return "उत्पाद विनिर्देशों के अनुसार, सामान्य उपयोग के लिए बैटरी जीवन 10 घंटे तक है। गेमिंग या गहन कार्यों के लिए, आप 4-6 घंटे की बैटरी जीवन की उम्मीद कर सकते हैं।"
+                elif "कीमत" in prompt or "price" in prompt.lower():
+                    return "इस उत्पाद की वर्तमान कीमत $1,299.99 है। कृपया हमारी वेबसाइट पर उपलब्ध वर्तमान प्रचार या छूट के लिए जांच करें।"
+                else:
+                    return "आपके प्रश्न के लिए धन्यवाद। उत्पाद की जानकारी के अनुसार, यह UltraBook Pro 15 पेशेवरों के लिए एक उच्च-प्रदर्शन लैपटॉप है।"
 
+            # Default English responses for unrecognized languages or English
             user_question = prompt.split("CUSTOMER QUESTION")[-1].strip().lower()
-
             if "battery" in user_question:
                 return "Based on the product specifications, the battery life is up to 10 hours for typical usage. For gaming or intensive tasks, you can expect 4-6 hours of battery life."
             elif "warranty" in user_question:
