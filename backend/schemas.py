@@ -28,7 +28,9 @@ class ProductResponse(BaseModel):
 class ChatRequest(BaseModel):
     product_id: int
     user_message: str
+    language: Optional[str] = None  # Optional language preference (ISO 639-1 code)
 
 class ChatResponse(BaseModel):
     answer: str
     product_name: str
+    detected_language: Optional[str] = None  # Language the response is in

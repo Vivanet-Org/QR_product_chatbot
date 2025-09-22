@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const VoiceInput = ({ onTranscript, onError }) => {
+const VoiceInput = ({ onTranscript, onError, language = 'en' }) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -20,7 +20,34 @@ const VoiceInput = ({ onTranscript, onError }) => {
 
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'en-US';
+    // Set recognition language based on prop
+    const getRecognitionLang = (langCode) => {
+      const langMap = {
+        'en': 'en-US',
+        'es': 'es-ES',
+        'fr': 'fr-FR',
+        'de': 'de-DE',
+        'it': 'it-IT',
+        'pt': 'pt-PT',
+        'zh-CN': 'zh-CN',
+        'zh-TW': 'zh-TW',
+        'ja': 'ja-JP',
+        'ko': 'ko-KR',
+        'hi': 'hi-IN',
+        'ar': 'ar-SA',
+        'ru': 'ru-RU',
+        'nl': 'nl-NL',
+        'pl': 'pl-PL',
+        'tr': 'tr-TR',
+        'vi': 'vi-VN',
+        'th': 'th-TH',
+        'id': 'id-ID',
+        'ms': 'ms-MY'
+      };
+      return langMap[langCode] || 'en-US';
+    };
+
+    recognition.lang = getRecognitionLang(language);
 
     recognition.onstart = () => {
       console.log('Speech recognition started');
@@ -91,7 +118,7 @@ const VoiceInput = ({ onTranscript, onError }) => {
         recognitionRef.current.stop();
       }
     };
-  }, [transcript, onTranscript, onError, isListening]);
+  }, [transcript, onTranscript, onError, isListening, language]);
 
   const toggleListening = () => {
     if (!isSupported) {

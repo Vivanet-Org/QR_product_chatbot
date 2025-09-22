@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { sendChatMessage } from '../services/api';
 import VoiceInput from './VoiceInput';
+import LanguageSelector from './LanguageSelector';
 
 const ChatInterface = ({ product }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [voiceError, setVoiceError] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    localStorage.getItem('preferredLanguage') || 'en'
+  );
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -37,6 +41,10 @@ const ChatInterface = ({ product }) => {
     setTimeout(() => setVoiceError(''), 5000);
   };
 
+  const handleLanguageChange = (langCode) => {
+    setSelectedLanguage(langCode);
+  };
+
   const handleSendMessage = async (e) => {
     if (e) e.preventDefault();
 
@@ -53,12 +61,13 @@ const ChatInterface = ({ product }) => {
     setIsLoading(true);
 
     try {
-      const response = await sendChatMessage(product.id, inputMessage);
+      const response = await sendChatMessage(product.id, inputMessage, selectedLanguage);
 
       const botMessage = {
         type: 'bot',
         content: response.answer,
         timestamp: new Date(),
+        language: response.detected_language,
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -77,8 +86,16 @@ const ChatInterface = ({ product }) => {
   return (
     <div className="chat-interface">
       <div className="product-header">
-        <h2>{product.name}</h2>
-        <p>{product.short_description}</p>
+        <div className="header-top">
+          <div className="product-info">
+            <h2>{product.name}</h2>
+            <p>{product.short_description}</p>
+          </div>
+          <LanguageSelector
+            currentLanguage={selectedLanguage}
+            onLanguageChange={handleLanguageChange}
+          />
+        </div>
       </div>
 
       <div className="messages-container">
@@ -117,6 +134,7 @@ const ChatInterface = ({ product }) => {
         <VoiceInput
           onTranscript={handleVoiceTranscript}
           onError={handleVoiceError}
+          language={selectedLanguage}
         />
         <button
           type="submit"

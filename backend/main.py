@@ -70,13 +70,21 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
         ]
     }
 
-    # Create context-rich prompt
-    prompt = llm_service.create_context_prompt(product_data, request.user_message)
+    # Create context-rich prompt with language support
+    prompt, detected_language = llm_service.create_context_prompt(
+        product_data,
+        request.user_message,
+        response_language=request.language
+    )
 
-    # Get LLM response
-    answer = await llm_service.get_response(prompt)
+    # Get LLM response in the detected/requested language
+    answer = await llm_service.get_response(prompt, detected_language)
 
-    return ChatResponse(answer=answer, product_name=product.name)
+    return ChatResponse(
+        answer=answer,
+        product_name=product.name,
+        detected_language=detected_language
+    )
 
 @app.get("/health")
 async def health_check():

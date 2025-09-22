@@ -23,13 +23,14 @@ export const getProduct = async (productId) => {
 };
 
 /**
- * Send chat message and get response
+ * Send chat message and get response with language support
  */
-export const sendChatMessage = async (productId, userMessage) => {
+export const sendChatMessage = async (productId, userMessage, language = null) => {
   try {
     const response = await api.post('/chat', {
       product_id: productId,
       user_message: userMessage,
+      language: language,
     });
     return response.data;
   } catch (error) {
