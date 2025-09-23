@@ -1,0 +1,11 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir qrcode[pil]
+
+COPY generate_qr.py .
+
+RUN mkdir -p /app/qr_codes
+
+CMD ["python", "generate_qr.py"]
