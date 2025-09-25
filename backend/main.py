@@ -19,7 +19,7 @@ app.add_middleware(
         "http://10.179.21.201:3000",
         "https://p2vzpcsr-3000.inc1.devtunnels.ms",
         # Add your production domain here when deploying
-        # "https://yourdomain.com"
+         "https://goldfish-app-swwri.ondigitalocean.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
