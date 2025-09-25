@@ -13,7 +13,14 @@ app = FastAPI(title="QR Product Chatbot API", version="1.0.0")
 # Configure CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://10.179.21.201:3000","https://p2vzpcsr-3000.inc1.devtunnels.ms"],  # React dev server
+    allow_origins=[
+        "http://localhost:3000",
+        "http://frontend:3000",  # Container name
+        "http://10.179.21.201:3000",
+        "https://p2vzpcsr-3000.inc1.devtunnels.ms",
+        # Add your production domain here when deploying
+        # "https://yourdomain.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -90,3 +97,4 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
+
