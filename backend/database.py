@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database URL - SQLite setup
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./chatbot.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./backend/chatbot.db")
 
 # Create engine with SQLite-specific configuration
 engine = create_engine(

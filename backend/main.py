@@ -15,11 +15,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "http://frontend:3000",  # Container name
-        "http://10.179.21.201:3000",
-        "https://p2vzpcsr-3000.inc1.devtunnels.ms",
-        # Add your production domain here when deploying
-         "https://goldfish-app-swwri.ondigitalocean.app"
+        "http://frontend:3000"  # Container name in Docker
     ],
     allow_credentials=True,
     allow_methods=["*"],
