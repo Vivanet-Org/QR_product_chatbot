@@ -49,7 +49,7 @@ Edit `.env` file with your production values:
 
 ```bash
 # Required Configuration
-DATABASE_URL=sqlite:///./data/chatbot.db
+DATABASE_URL=sqlite:///./backend/chatbot.db
 GROQ_API_KEY=your_actual_groq_api_key
 REACT_APP_API_URL=http://your-droplet-ip:80
 FRONTEND_URL=http://your-droplet-ip:80

@@ -21,7 +21,7 @@ RUN mkdir -p /app/data
 EXPOSE 8000
 
 # Set environment variables
-ENV DATABASE_URL=sqlite:///./data/chatbot.db
+ENV DATABASE_URL=sqlite:///./backend/chatbot.db
 ENV PYTHONPATH=/app
 
 # Health check
