@@ -43,19 +43,7 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - chatbot-network
-
-  data-seeder:
-    build: ./backend
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-    command: python populate_sample_data.py
-    depends_on:
-      backend:
-        condition: service_healthy
-    restart: "no"
-    networks:
-      - chatbot-network
+      - qr-chatbot-network
 
   frontend:
     build: ./frontend
@@ -86,8 +74,8 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - chatbot-network
+      - qr-chatbot-network
 
 networks:
-  chatbot-network:
+  qr-chatbot-network:
     driver: bridge

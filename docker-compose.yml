@@ -34,7 +34,7 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - chatbot-network
+      - qr-chatbot-network
 
   frontend:
     build: ./frontend
@@ -53,8 +53,8 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - chatbot-network
+      - qr-chatbot-network
 
 networks:
-  chatbot-network:
+  qr-chatbot-network:
     driver: bridge
