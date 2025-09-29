@@ -17,6 +17,7 @@ services:
       - qr-chatbot-network
   backend:
     build: ./backend
+    container_name: qr-chatbot-backend
     ports:
       - "8000:8000"
     environment:
@@ -47,6 +48,7 @@ services:
 
   frontend:
     build: ./frontend
+    container_name: qr-chatbot-frontend
     ports:
       - "3000:3000"
     environment:
