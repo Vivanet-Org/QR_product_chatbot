@@ -14,14 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source code
 COPY . .
 
-# Create directory for SQLite database
-RUN mkdir -p /app/data
-
 # Expose port
 EXPOSE 8000
 
 # Set environment variables
-ENV DATABASE_URL=sqlite:///./chatbot.db
 ENV PYTHONPATH=/app
 
 # Health check

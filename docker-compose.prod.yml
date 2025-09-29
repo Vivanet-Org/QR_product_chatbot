@@ -4,11 +4,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./backend/chatbot.db
+      - DATABASE_URL=${DATABASE_URL}
       - GROQ_API_KEY=${GROQ_API_KEY}
-    volumes:
-      # Persistent database storage
-      - chatbot_data:/app/backend
     restart: always
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
@@ -35,9 +32,7 @@ services:
   data-seeder:
     build: ./backend
     environment:
-      - DATABASE_URL=sqlite:///./backend/chatbot.db
-    volumes:
-      - chatbot_data:/app/data
+      - DATABASE_URL=${DATABASE_URL}
     command: python populate_sample_data.py
     depends_on:
       backend:
@@ -76,10 +71,6 @@ services:
         max-file: "3"
     networks:
       - chatbot-network
-
-volumes:
-  chatbot_data:
-    driver: local
 
 networks:
   chatbot-network:

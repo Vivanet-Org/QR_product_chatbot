@@ -4,11 +4,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./backend/chatbot.db
+      - DATABASE_URL=${DATABASE_URL}
       - GROQ_API_KEY=${GROQ_API_KEY}
     volumes:
-      # Database persistence
-      - ./data:/app/data
       # Development hot reload (optional)
       - ./backend:/app
     restart: unless-stopped
