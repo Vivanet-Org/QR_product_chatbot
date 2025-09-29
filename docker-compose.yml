@@ -1,4 +1,21 @@
 services:
+  nginx:
+      image: nginx:alpine
+      container_name: nginx-proxy
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./nginx/conf.d:/etc/nginx/conf.d
+        - ./ssl:/etc/nginx/ssl  # For SSL certificates
+      depends_on:
+        - backend
+        - agent-framework
+        - frontend
+      restart: unless-stopped
+      networks:
+        - qr-chatbot-network
   backend:
     build: ./backend
     ports:
@@ -22,7 +39,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      - "3000:3000"
     environment:
       - REACT_APP_API_URL=/api
     depends_on:
