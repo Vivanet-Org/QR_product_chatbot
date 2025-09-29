@@ -7,13 +7,18 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Database URL - SQLite setup
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./backend/chatbot.db")
+# Database URL - PostgreSQL setup
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Create engine with SQLite-specific configuration
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is required")
+
+# Create engine with PostgreSQL configuration
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}  # Needed for SQLite in multi-threaded environment
+    pool_size=10,
+    max_overflow=20,
+    pool_pre_ping=True  # Enables automatic reconnection handling
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
