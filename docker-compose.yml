@@ -11,7 +11,6 @@ services:
         - ./ssl:/etc/nginx/ssl  # For SSL certificates
       depends_on:
         - backend
-        - agent-framework
         - frontend
       restart: unless-stopped
       networks:
